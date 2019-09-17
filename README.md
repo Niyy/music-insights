@@ -1,1 +1,2 @@
-# music-insights
+# Music and its Insights
+## Author: Austin Meyer
