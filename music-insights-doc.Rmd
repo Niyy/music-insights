@@ -1,0 +1,20 @@
+---
+title: "Music Insights"
+author: "Austin Meyer"
+output: html_notebook
+---
+
+```{r}
+install.packages("tidyverse")
+library("tidyverse")
+
+survey <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/music-survey.csv")
+preferances <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/preferences-survey.csv")
+```
+
+Cleaning-up data titles:
+```{r}
+colnames(survey)[colnames(survey) == "First, we are going to create a pseudonym for you to keep this survey anonymous (more or less). Which pseudonym generator would you prefer?"] <- "generator_name"
+colnames(survey)[colnames(survey) == "What is your pseudonym?" ] <- "pseudonym"
+```
+
