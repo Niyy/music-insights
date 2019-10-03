@@ -41,3 +41,9 @@ Person <- tibble(pseudonym_generator=survey$pseudonym_generator, pseudonym=surve
 Create new table for favorite song
 ```{r}
 FavoriteSong <- tibble(pseudonym=survey$pseudonym, favorite_song=survey$favorite_song, favorite_song_artist=survey$favorite_song_artist, favorite_song_link=survey$favorite_song_link)
+```
+
+Change the times to POIXlt for Person
+```{r}
+Person$time_submitted <- as.POSIXlt(parse_datetime(Person$time_submitted, format="%m/%d/%y %H:%M"))
+```
