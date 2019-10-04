@@ -31,6 +31,7 @@ colnames(survey)[colnames(survey) == "Link to song (on Youtube or Vimeo)"] <- "f
 ```{r}
 library(tidyr)
 library(dplyr)
+library(readr)
 ```
 
 Create New table for person
@@ -46,4 +47,23 @@ FavoriteSong <- tibble(pseudonym=survey$pseudonym, favorite_song=survey$favorite
 Change the times to POIXlt for Person
 ```{r}
 Person$time_submitted <- as.POSIXlt(parse_datetime(Person$time_submitted, format="%m/%d/%y %H:%M"))
+```
+
+Factorize academic_year and academic_major in table Person:
+```{r}
+Person$academic_level <- as.factor(Person$academic_level)
+Person$academic_major <- as.factor(Person$academic_major)
+```
+
+Two different types of data titles. "Computer Information Systems" and "Computer information systems". Change that to just "Computer Information Systems".
+```{r}
+levels(Person$academic_major)[levels(Person$academic_major) == "Computer information systems"] <- "Computer Information Systems"
+```
+
+Create new table called Ratings with cleaned and tidy data.
+```{r}
+colnames(preferances)[colnames(preferances) == "What was your pseudonym?" ] <- "pseudonym"
+preferances %>% gather(artist_song, rating, 3:45)
+colnames(Ratings)[colnames(Ratings) == "Timestamp"] <- "time_submitted"
+Ratings$time_submitted <- as.POSIXlt(parse_datetime(Ratings$time_submitted, format="%m/%d/%y %H:%M"))
 ```
