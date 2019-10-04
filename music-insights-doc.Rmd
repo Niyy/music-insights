@@ -60,10 +60,18 @@ Two different types of data titles. "Computer Information Systems" and "Computer
 levels(Person$academic_major)[levels(Person$academic_major) == "Computer information systems"] <- "Computer Information Systems"
 ```
 
-Create new table called Ratings with cleaned and tidy data.
+Create new table called Ratings with cleaned and tidy data from preferances.
 ```{r}
 colnames(preferances)[colnames(preferances) == "What was your pseudonym?" ] <- "pseudonym"
+
 preferances %>% gather(artist_song, rating, 3:45)
+
 colnames(Ratings)[colnames(Ratings) == "Timestamp"] <- "time_submitted"
+
 Ratings$time_submitted <- as.POSIXlt(parse_datetime(Ratings$time_submitted, format="%m/%d/%y %H:%M"))
+```
+
+Create a new table called FavoriteSong which takes columns and observations from survey.
+```{r}
+FavoriteSong <- tibble(pseudonym=survey$pseudonym, favorite_song=survey$favorite_song, favorite_song_artist=survey$favorite_song_artist, favorite_song_link=survey$favorite_song_link)
 ```
