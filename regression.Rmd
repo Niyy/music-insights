@@ -1,0 +1,56 @@
+---
+title: "Music Insights - Models"
+author: "Austin Meyer"
+output:
+  html_document:
+    df_print: paged
+---
+### Picking-up
+
+  First lets pick up where we left off.
+
+```{r echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
+include <- function(library_name){
+  if( !(library_name %in% installed.packages()) )
+    install.packages(library_name) 
+  library(library_name, character.only=TRUE)
+}
+include("tidyverse")
+include("knitr")
+include("caret")
+purl("music-insights-doc.Rmd", output = "part1.r")
+source("part1.r")
+```
+
+# Making Average Ratings
+
+  First lets take a look at each users average rating. We will also combine this with Average_Person.
+  
+```{r}
+average_ratings <- Ratings %>% 
+   group_by(pseudonym) %>% 
+   summarize(avg=mean(rating))
+
+Average_Person <- left_join(average_ratings, Person, by=NULL)
+```
+
+  Lets make a model to view what is most influential for the preferances table.
+  
+```{r}
+average_ratings_model <- lm(data=Average_Person, formula=avg~pseudonym_generator+sex+year_born+academic_major+academic_level)
+summary(average_ratings_model)
+```
+  Now we are going to split up our data into a train and test sets.
+```{r}
+set.seed(385)
+index <- createDataPartition(Average_Person$avg, p = 0.70, list=FALSE)
+
+train <- Average_Person[index, ]
+test <- Average_Person[-index, ]
+
+train_model <- lm(Average_Person, formula=avg~pseudonym_generator+sex+year_born+academic_major+academic_level, subset = train)
+
+summary(train_model)
+```
+
+I am getting lovely errors, which I don't know how to solve.

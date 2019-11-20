@@ -7,8 +7,11 @@ output:
 ---
 
 ```{r}
-install.packages("tidyverse")
+# install.packages("tidyverse")
 library("tidyverse")
+library("tidyr")
+library("dplyr")
+library("readr")
 
 survey <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/music-survey.csv")
 preferances <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/preferences-survey.csv")
@@ -29,16 +32,15 @@ colnames(survey)[colnames(survey) == "Song"] <- "favorite_song"
 colnames(survey)[colnames(survey) == "Link to song (on Youtube or Vimeo)"] <- "favorite_song_link"
 ```
 
-
-```{r}
-library(tidyr)
-library(dplyr)
-library(readr)
-```
-
 Create New table for person
 ```{r}
-Person <- tibble(pseudonym_generator=survey$pseudonym_generator, pseudonym=survey$pseudonym, sex=survey$sex, year_born=survey$year_born, academic_major=survey$academic_major, academic_level=survey$academic_level, time_submitted=survey$time_submitted)
+Person <- tibble(pseudonym_generator=survey$generator_name, pseudonym=survey$pseudonym, sex=survey$sex, year_born=survey$year_born, academic_major=survey$academic_major, academic_level=survey$academic_level, time_submitted=survey$time_submitted)
+
+# This person only completed one survey
+Person <- subset(Person, pseudonym != "Heroes War")
+
+# Make Person pseudonym_generator
+Person$pseudonym_generator <- as.factor(Person$pseudonym_generator)
 ```
 
 Create new table for favorite song
@@ -65,8 +67,9 @@ levels(Person$academic_major)[levels(Person$academic_major) == "Computer informa
 Create new table called Ratings with cleaned and tidy data from preferances.
 ```{r}
 colnames(preferances)[colnames(preferances) == "What was your pseudonym?" ] <- "pseudonym"
+preferances <- distinct(preferances, pseudonym, .keep_all = TRUE)
 
-preferances %>% gather(artist_song, rating, 3:45)
+Ratings <-preferances %>% gather(artist_song, rating, 3:45)
 
 colnames(Ratings)[colnames(Ratings) == "Timestamp"] <- "time_submitted"
 
@@ -76,4 +79,9 @@ Ratings$time_submitted <- as.POSIXlt(parse_datetime(Ratings$time_submitted, form
 Create a new table called FavoriteSong which takes columns and observations from survey.
 ```{r}
 FavoriteSong <- tibble(pseudonym=survey$pseudonym, favorite_song=survey$favorite_song, favorite_song_artist=survey$favorite_song_artist, favorite_song_link=survey$favorite_song_link)
+```
+
+ggplot:
+```{r}
+ggplot(Ratings, aes(x=Ratings$artist_song,y=Ratings$rating)) + geom_boxplot() + theme(axis.text.x = element_text(angle = 45))
 ```
